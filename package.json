@@ -1,0 +1,8 @@
+{
+  "name": "node-sample",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/stoatwzf/node-sample.git",
+  "author": "stoat <stoatwzf@gmail.com>",
+  "license": "MIT"
+}
