@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>form buffer</title>
+</head>
+<body>
+	<form action="http://127.0.0.1:8181/xhr" method="GET">
+		<label for="">user:</label>
+		<input type="text" name="user">
+		<br>
+		<input type="file">
+		<br>
+		<input type="submit" value="submit">
+	</form>
+	<img src="" alt="">
+	<script>
+		const img = document.querySelector('img');
+		const fileChange = () => {
+			const input = document.querySelector('input[type=file]');
+
+			input.onchange = function (event){
+				const file = this.files[0];
+				
+				if (!!file){
+					const reader = new FileReader();
+					
+					reader.readAsDataURL(file);
+					reader.onload = function (){
+						img.src = this.result;
+					}
+				} else {
+					img.src = '';
+				}
+			}
+		}
+		const formSubmit = () => {
+			const form = document.querySelector('form');
+
+			form.addEventListener('submit', function (event){
+				const formData = new FormData(this);
+				const xhr = new XMLHttpRequest();
+
+				formData.append('name', 'stoat');
+				xhr.open(this.method, this.action, true);
+				xhr.responseType = 'blob';
+				xhr.onload = function (){
+					if (xhr.status === 200){
+						const reader = new FileReader();
+						const objURL = URL.createObjectURL(xhr.response);
+						
+						img.onload = () => {
+							URL.revokeObjectURL(objURL);
+						}
+						img.src = objURL;
+					}
+				}.bind(this);
+				xhr.send(formData);
+				event.preventDefault();
+			}, false);
+		}
+
+		fileChange();
+		formSubmit();
+	</script>
+</body>
+</html>

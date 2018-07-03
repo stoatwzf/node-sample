@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Buffer Slice</title>
+</head>
+<body>
+	<input type="file">
+	<script>
+		const successCb = (resp, chunks, query) => {
+			console.log(resp);
+			if (resp.isFinish) {
+				console.log('success');
+			} else {
+				query.nextOffset = resp.offset;
+				upload(chunks, query, successCb);
+			}
+		}
+		const upload = (chunks, query, cb) => {
+			const queryStr = Reflect.ownKeys(query).map(x => x + '=' + query[x]).join('&');
+			const xhr = new XMLHttpRequest();
+
+			xhr.open('POST', `http://127.0.0.1:8181/xhr?${queryStr}`, true);
+			xhr.onload = function (event){
+				if (xhr.status === 200){
+					const resp = JSON.parse(xhr.response);
+
+					cb(resp, chunks, query);
+				}
+			};
+			xhr.send(chunks[query.nextOffset]);
+		}
+		const initUpload = () => {
+			const chunk = 100 * 1024;
+			const input = document.querySelector('input');
+
+			input.onchange = function (event){
+				const file = this.files[0];
+				let query = {};
+				let chunks = [];
+
+				if (!!file){
+					let start = 0;
+
+					for (let i = 0; i < Math.ceil(file.size / chunk); i += 1){
+						const end = start + chunk;
+
+						chunks[i] = file.slice(start, end);
+						start = end;
+					}
+					query = {
+						fileSize: file.size,
+						dataSize: chunk,
+						nextOffset: 0
+					};
+
+					upload(chunks, query, successCb);
+				}
+			}
+		};
+
+		initUpload();
+	</script>
+</body>
+</html>

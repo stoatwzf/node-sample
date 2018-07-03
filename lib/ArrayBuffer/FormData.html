@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>FormData</title>
+</head>
+<body>
+	<form action="http://127.0.0.1:8181/xhr" method="POST">
+		<label for="">user:</label>
+		<input type="text" name="user">
+		<br>
+		<label for="">passWord:</label>
+		<input type="password" name="password">
+		<br>
+		<input type="submit" value="submit">
+	</form>
+	<script>
+		document.querySelector('form').addEventListener('submit', function (event){
+			const formData = new FormData(this);
+			const xhr = new XMLHttpRequest();
+
+			formData.append('img', new Blob(['hello'], { type: 'text/plain' }));
+			xhr.open(this.method, this.action, true);
+			xhr.onload = function (event){
+				if (xhr.status === 200){
+					this.reset();
+				}
+			}.bind(this);
+			xhr.send(formData);
+			event.preventDefault();
+		}, false);
+	</script>
+</body>
+</html>

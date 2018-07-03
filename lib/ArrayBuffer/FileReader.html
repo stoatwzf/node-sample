@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>FileReader</title>
+</head>
+<body>
+	<input type="file" multiple>
+	<script>
+		const input = document.querySelector('input');
+
+		input.onchange = function (event){
+			
+
+			for (let i = 0; i < this.files.length; i += 1){
+				const file = this.files[i];
+				const reader = new FileReader();
+
+				reader.readAsDataURL(file);
+				reader.onload = function (){
+					let img = document.createElement('img');
+
+					img.src = this.result;
+					img.onload = () => {
+						document.body.appendChild(img);
+					}
+				}
+			}
+		}
+	</script>
+</body>
+</html>
